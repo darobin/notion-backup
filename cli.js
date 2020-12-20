@@ -36,7 +36,7 @@ async function sleep (seconds) {
 
 // formats: markdown, html
 async function exportFromNotion (format) {
-  let { taskId } = await post('enqueueTask', {
+  let { data: { taskId } } = await post('enqueueTask', {
     task: {
       eventName: 'exportSpace',
       request: {
@@ -53,7 +53,7 @@ async function exportFromNotion (format) {
   let exportURL;
   while (true) {
     await sleep(2);
-    let { results: tasks } = await post('getTasks', { taskIds: [taskId] })
+    let { data: { results: tasks } } = await post('getTasks', { taskIds: [taskId] })
       , task = tasks.find(t => t.id === taskId)
     ;
     console.warn(`Pages exported: ${task.status.pagesExported}`);
