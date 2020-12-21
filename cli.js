@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /* eslint no-await-in-loop: 0 */
 
 let axios = require('axios')
