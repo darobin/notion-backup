@@ -3,7 +3,7 @@
 
 let axios = require('axios')
   , extract = require('extract-zip')
-  , { createWriteStream, mkdirSync } = require('fs')
+  , { createWriteStream, mkdirSync, rmdirSync } = require('fs')
   , { join } = require('path')
   , notionAPI = 'https://www.notion.so/api/v3'
   , { NOTION_TOKEN, NOTION_SPACE_ID } = process.env
@@ -82,11 +82,13 @@ async function run () {
     , htmlDir = join(cwd, 'html')
     , htmlFile = join(cwd, 'html.zip')
   ;
-  mkdirSync(mdDir, { recursive: true });
   await exportFromNotion('markdown');
+  rmdirSync(mdDir, { recursive: true });
+  mkdirSync(mdDir, { recursive: true });
   await extract(mdFile, { dir: mdDir });
-  mkdirSync(htmlDir, { recursive: true });
   await exportFromNotion('html');
+  rmdirSync(htmlDir, { recursive: true });
+  mkdirSync(htmlDir, { recursive: true });
   await extract(htmlFile, { dir: htmlDir });
 }
 
