@@ -26,7 +26,7 @@ on:
     branches:
       - master
   schedule:
-    -   cron: "0 * * * *"
+    -   cron: "0 */4 * * *"
 
 jobs:
   backup:
@@ -46,6 +46,9 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
+      
+      - name: Delete zips
+        run: rm -f *.zip
 
       - name: Commit changes
         uses: elstudio/actions-js-build/commit@v3
