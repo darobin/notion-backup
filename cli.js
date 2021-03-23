@@ -37,42 +37,47 @@ async function sleep (seconds) {
 
 // formats: markdown, html
 async function exportFromNotion (format) {
-  let { data: { taskId } } = await post('enqueueTask', {
-    task: {
-      eventName: 'exportSpace',
-      request: {
-        spaceId: NOTION_SPACE_ID,
-        exportOptions: {
-          exportType: format,
-          timeZone: 'America/New_York',
-          locale: 'en',
+  try {
+    let { data: { taskId } } = await post('enqueueTask', {
+      task: {
+        eventName: 'exportSpace',
+        request: {
+          spaceId: NOTION_SPACE_ID,
+          exportOptions: {
+            exportType: format,
+            timeZone: 'America/New_York',
+            locale: 'en',
+          },
         },
       },
-    },
-  });
-  console.warn(`Enqueued task ${taskId}`);
-  let exportURL;
-  while (true) {
-    await sleep(2);
-    let { data: { results: tasks } } = await post('getTasks', { taskIds: [taskId] })
-      , task = tasks.find(t => t.id === taskId)
-    ;
-    console.warn(`Pages exported: ${task.status.pagesExported}`);
-    if (task.state === 'success') {
-      exportURL = task.status.exportURL;
-      break;
+    });
+    console.warn(`Enqueued task ${taskId}`);
+    let exportURL;
+    while (true) {
+      await sleep(2);
+      let { data: { results: tasks } } = await post('getTasks', { taskIds: [taskId] })
+        , task = tasks.find(t => t.id === taskId)
+      ;
+      console.warn(`Pages exported: ${task.status.pagesExported}`);
+      if (task.state === 'success') {
+        exportURL = task.status.exportURL;
+        break;
+      }
     }
+    let res = await client({
+      method: 'GET',
+      url: exportURL,
+      responseType: 'stream'
+    });
+    let stream = res.data.pipe(createWriteStream(join(process.cwd(), `${format}.zip`)));
+    await new Promise((resolve, reject) => {
+      stream.on('close', resolve);
+      stream.on('error', reject);
+    });
   }
-  let res = await client({
-    method: 'GET',
-    url: exportURL,
-    responseType: 'stream'
-  });
-  let stream = res.data.pipe(createWriteStream(join(process.cwd(), `${format}.zip`)));
-  await new Promise((resolve, reject) => {
-    stream.on('close', resolve);
-    stream.on('error', reject);
-  });
+  catch (err) {
+    die(err);
+  }
 }
 
 async function run () {
