@@ -4,7 +4,9 @@
   "description": "Notion exporter meant to be used as part of a GitHub workflow",
   "main": "./cli.js",
   "bin": {
-    "notion-backup": "./cli.js"
+    "notion-backup": "./notion-backup.js",
+    "notion-backup-page": "./notion-backup-page.js",
+    "notion-backup-collection": "./notion-backup-collection.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +25,10 @@
     "eslint-config-robin": "^6.1.3"
   },
   "dependencies": {
-    "axios": "^0.21.0",
-    "extract-zip": "^2.0.1"
+    "axios": "^0.21.1",
+    "commander": "^7.2.0",
+    "extract-zip": "^2.0.1",
+    "notion-client": "^4.5.2",
+    "notion-utils": "^4.5.2"
   }
 }
