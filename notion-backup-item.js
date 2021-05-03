@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 let { program } = require('commander')
-  , { writeFileSync } = require('fs')
-  , { join, isAbsolute } = require('path')
+  , { writeFileSync, mkdirSync } = require('fs')
+  , { join, isAbsolute, dirname } = require('path')
   , { NotionAPI } = require('notion-client')
   , { parsePageId } = require('notion-utils')
   , { NOTION_TOKEN } = process.env
@@ -43,6 +43,7 @@ async function run () {
   let json = JSON.stringify(refPage, null, 2);
   if (out) {
     let file = isAbsolute(out) ? out : join(process.cwd(), out);
+    mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, json);
   }
   else process.stdout.write(json);
