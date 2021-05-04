@@ -2,11 +2,10 @@
   "name": "notion-backup",
   "version": "1.1.1",
   "description": "Notion exporter meant to be used as part of a GitHub workflow",
-  "main": "./cli.js",
+  "main": "./notion-backup.js",
   "bin": {
     "notion-backup": "./notion-backup.js",
-    "notion-backup-page": "./notion-backup-page.js",
-    "notion-backup-collection": "./notion-backup-collection.js"
+    "notion-backup-item": "./notion-backup-item.js"
   },
   "repository": {
     "type": "git",
