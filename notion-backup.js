@@ -3,6 +3,7 @@
 
 let axios = require('axios')
   , extract = require('extract-zip')
+  , { retry } = require('async')
   , { createWriteStream, mkdirSync, rmdirSync } = require('fs')
   , { join } = require('path')
   , notionAPI = 'https://www.notion.so/api/v3'
@@ -52,13 +53,23 @@ async function exportFromNotion (format) {
       },
     });
     console.warn(`Enqueued task ${taskId}`);
-    let exportURL;
+    let failCount = 0
+      , exportURL
+    ;
     while (true) {
       await sleep(2);
-      let { data: { results: tasks } } = await post('getTasks', { taskIds: [taskId] })
-        , task = tasks.find(t => t.id === taskId)
-      ;
-      console.warn(`Pages exported: ${task.status.pagesExported}`);
+      let { data: { results: tasks } } = await retry(
+        { times: 3, interval: 2000 },
+        async () => post('getTasks', { taskIds: [taskId] })
+      );
+      let task = tasks.find(t => t.id === taskId);
+      // console.warn(JSON.stringify(task, null, 2)); // DBG
+      if (task.state === 'in_progress') console.warn(`Pages exported: ${task.status.pagesExported}`);
+      if (task.state === 'failure') {
+        failCount++;
+        console.warn(`Task error: ${task.error}`);
+        if (failCount === 5) break;
+      }
       if (task.state === 'success') {
         exportURL = task.status.exportURL;
         break;
