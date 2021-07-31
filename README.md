@@ -49,6 +49,9 @@ jobs:
       
       - name: Delete zips
         run: rm -f *.zip
+        
+      - name: Rename HTML
+        run: mv html docs
 
       - name: Commit changes
         uses: elstudio/actions-js-build/commit@v3
