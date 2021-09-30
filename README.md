@@ -8,6 +8,11 @@ It reads `NOTION_TOKEN` and `NOTION_SPACE_ID` from the environment, and outputs 
 `html` and `markdown` directories in the current working directory, as well as to `html.zip` and
 `markdown.zip`.
 
+**NOTE**: if you log out of your account, the `NOTION_TOKEN` will get invalidated and this process
+will fail. There isn't anything that I know of that I can do about that until Notion decide to add
+a backup endpoint to their official API, at which point this will be able to use a proper 
+authentication token.
+
 ## Setup
 
 This assumes you are looking to set this up to back up Notion to GitHub.
