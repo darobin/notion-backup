@@ -57,6 +57,7 @@ async function exportFromNotion (format) {
       , exportURL
     ;
     while (true) {
+      if (failCount >= 5) break;
       await sleep(2);
       let { data: { results: tasks } } = await retry(
         { times: 3, interval: 2000 },
@@ -64,11 +65,21 @@ async function exportFromNotion (format) {
       );
       let task = tasks.find(t => t.id === taskId);
       // console.warn(JSON.stringify(task, null, 2)); // DBG
+      if (!task) {
+        failCount++;
+        console.warn(`No task, waiting.`);
+        continue;
+      }
+      if (!task.status) {
+        failCount++;
+        console.warn(`No task status, waiting. Task was:\n${JSON.stringify(task, null, 2)}`);
+        continue;
+      }
       if (task.state === 'in_progress') console.warn(`Pages exported: ${task.status.pagesExported}`);
       if (task.state === 'failure') {
         failCount++;
         console.warn(`Task error: ${task.error}`);
-        if (failCount === 5) break;
+        continue;
       }
       if (task.state === 'success') {
         exportURL = task.status.exportURL;
