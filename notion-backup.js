@@ -58,7 +58,7 @@ async function exportFromNotion (format) {
     ;
     while (true) {
       if (failCount >= 5) break;
-      await sleep(2);
+      await sleep(10);
       let { data: { results: tasks } } = await retry(
         { times: 3, interval: 2000 },
         async () => post('getTasks', { taskIds: [taskId] })
