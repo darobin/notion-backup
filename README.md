@@ -10,7 +10,7 @@ It reads `NOTION_TOKEN` and `NOTION_SPACE_ID` from the environment, and outputs 
 
 **NOTE**: if you log out of your account, the `NOTION_TOKEN` will get invalidated and this process
 will fail. There isn't anything that I know of that I can do about that until Notion decide to add
-a backup endpoint to their official API, at which point this will be able to use a proper 
+a backup endpoint to their official API, at which point this will be able to use a proper
 authentication token.
 
 ## Setup
@@ -51,7 +51,8 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
-      
+          NODE_OPTIONS: "--max-http-header-size 15000"
+
       - name: Delete zips
         run: rm -f *.zip
 
