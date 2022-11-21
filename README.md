@@ -32,6 +32,9 @@ on:
       - master
   schedule:
     -   cron: "0 */4 * * *"
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   backup:
