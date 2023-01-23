@@ -21,9 +21,10 @@ This assumes you are looking to set this up to back up Notion to GitHub.
 2. Get the `NOTION_TOKEN` and `NOTION_SPACE_ID` as explained in
   [this blog post](https://medium.com/@arturburtsev/automated-notion-backups-f6af4edc298d).
 3. Set them as secrets in your GitHub repo.
-4. Install the following under `.github/workflows/whatever.yml` in your repo.
-5. Configure the frequency by changing the `cron` value. You can use [Crontab.guru](https://crontab.guru/#0_*/4_*_*_*).
-6. Push and control your backup workflow from the `Actions` tab of your repository Github page.
+4. Give Actions write access to your repository: `Settings` > `Actions` > `General` > `Workflow permissions` > choose `Read and write permissions`
+5. Install the following under `.github/workflows/whatever.yml` in your repo.
+6. Configure the frequency by changing the `cron` value. You can use [Crontab.guru](https://crontab.guru/#0_*/4_*_*_*).
+7. Push and control your backup workflow from the `Actions` tab of your repository Github page.
 
 ```yaml
 name: "Notion backup"
