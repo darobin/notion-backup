@@ -35,7 +35,7 @@ on:
       - master
   schedule:
     -   cron: "0 */4 * * *"
-    
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
-          
+
       - name: Delete previous backup
         run: rm -rf markdown html *.zip
 
@@ -65,7 +65,10 @@ jobs:
           NODE_OPTIONS: "--max-http-header-size 15000"
 
       - name: Delete zips
-        run: rm -f *.zip
+        run: |
+          rm -f *.zip
+          rm -f markdown/*-Part*.zip
+          rm -f html/*-Part*.zip
 
       - name: Commit changes
         run: |
