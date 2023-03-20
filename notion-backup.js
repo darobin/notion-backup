@@ -4,7 +4,7 @@
 let axios = require('axios')
   , extract = require('extract-zip')
   , { retry } = require('async')
-  , { createWriteStream, mkdirSync, rmdirSync } = require('fs')
+  , { createWriteStream, mkdirSync, rmdirSync, readdirSync } = require('fs')
   , { join } = require('path')
   , notionAPI = 'https://www.notion.so/api/v3'
   , { NOTION_TOKEN, NOTION_SPACE_ID } = process.env
@@ -113,10 +113,19 @@ async function run () {
   rmdirSync(mdDir, { recursive: true });
   mkdirSync(mdDir, { recursive: true });
   await extract(mdFile, { dir: mdDir });
+  await extractInnerZip(mdDir);
   await exportFromNotion('html');
   rmdirSync(htmlDir, { recursive: true });
   mkdirSync(htmlDir, { recursive: true });
   await extract(htmlFile, { dir: htmlDir });
+  await extractInnerZip(htmlDir);
+}
+
+async function extractInnerZip (dir) {
+  let files = readdirSync(dir).filter(fn => /Part-\d+\.zip$/i.test(fn));
+  for (let file of files) {
+    await extract(join(dir, file), { dir });
+  }
 }
 
 run();
