@@ -49,7 +49,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '18'
 
       - name: Delete previous backup
         run: rm -rf markdown html *.zip
