@@ -8,19 +8,30 @@ It reads `NOTION_TOKEN` and `NOTION_SPACE_ID` from the environment, and outputs 
 `html` and `markdown` directories in the current working directory, as well as to `html.zip` and
 `markdown.zip`.
 
-**NOTE**: if you log out of your account, the `NOTION_TOKEN` will get invalidated and this process
-will fail. There isn't anything that I know of that I can do about that until Notion decide to add
-a backup endpoint to their official API, at which point this will be able to use a proper
-authentication token.
+## Obtaining tokens
+
+Automatically downloading backups from Notion requires two unique authentication tokens and your individual space ID which must be obtained for the script to work.
+
+1. Log into your Notion account in your browser of choice if you haven't done so already.
+2. Open a new tab in your browser and open the development tools. This is usually easiest done by right-click and selecting `Inspect Element` (Chrome, Edge, Safari) or `Inspect` (Firefox). Switch to the Network tab.
+3. Open https://notion.so/f/. You must use this specific subdirectory to obtain the right cookies.
+4. Insert `getSpaces` into the search filter of the Network tab. This should give you one result. Click on it.
+5. In the Preview tab, look for the key `space`. There you should find a list of all the workspaces you have access to. Unless you're part of shared workspaces there should only be one.
+6. Copy the UUID of the workspace you want to backup (e.g. `6e560115-7a65-4f65-bb04-1825b43748f1`). This is your `NOTION_SPACE_ID`.
+6. Switch to the Application (Chrome, Edge) or Storage (Firefox, Safari) tab on the top.
+7. In the left sidebar, select `Cookies` -> `https://www.notion.so` (Chrome, Edge, Firefox) or `Cookies – https://www.notion.so` (Safari).
+8. Copy the value of `token_v2` as your `NOTION_TOKEN` and the value of `file_token` as your `NOTION_FILE_TOKEN`.
+9. Set the three environment variables as secrets for actions in your GitHub repository.
+
+**NOTE**: if you log out of your account or your session expires naturally, the `NOTION_TOKEN` and `NOTION_FILE_TOKEN` will get invalidated and the backup will fail. In this case you need to obtain new tokens by repeating this process. There is currently no practical way to automize this until Notion decide to add a backup endpoint to their official API, at which point this script will be able to use a proper authentication token.
 
 ## Setup
 
 This assumes you are looking to set this up to back up Notion to GitHub.
 
-1. Create a repo for your backup. You probably want it private.
-2. Get the `NOTION_TOKEN` and `NOTION_SPACE_ID` as explained in
-  [this blog post](https://medium.com/@arturburtsev/automated-notion-backups-f6af4edc298d).
-3. Set them as secrets in your GitHub repo.
+1. Obtain the required values for the environment variables as explained above.
+2. Create a repo for your backup. You probably want it private.
+3. Set the `NOTION_TOKEN`, `NOTION_FILE_TOKEN` and `NOTION_SPACE_ID` environment variables as secrets in your GitHub repo.
 4. Give Actions write access to your repository: `Settings` > `Actions` > `General` > `Workflow permissions` > choose `Read and write permissions`
 5. Install the following under `.github/workflows/whatever.yml` in your repo.
 6. Configure the frequency by changing the `cron` value. You can use [Crontab.guru](https://crontab.guru/#0_*/4_*_*_*).
