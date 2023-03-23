@@ -72,6 +72,7 @@ jobs:
         run: notion-backup
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
 
