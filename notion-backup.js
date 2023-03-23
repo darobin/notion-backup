@@ -21,7 +21,7 @@ let axios = require('axios')
     }
 ;
 
-if (!NOTION_TOKEN || !NOTION_SPACE_ID) {
+if (!NOTION_TOKEN || !NOTION_FILE_TOKEN || !NOTION_SPACE_ID) {
   die(`Need to have NOTION_TOKEN, NOTION_FILE_TOKEN and NOTION_SPACE_ID defined in the environment.
 See https://github.com/darobin/notion-backup/blob/main/README.md for
 a manual on how to get that information.`);
