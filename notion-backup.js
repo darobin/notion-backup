@@ -8,11 +8,11 @@ let axios = require('axios')
   , { mkdir, rm, readdir } = require('fs/promises')
   , { join } = require('path')
   , notionAPI = 'https://www.notion.so/api/v3'
-  , { NOTION_TOKEN, NOTION_SPACE_ID } = process.env
+  , { NOTION_TOKEN, NOTION_FILE_TOKEN, NOTION_SPACE_ID } = process.env
   , client = axios.create({
       baseURL: notionAPI,
       headers: {
-        Cookie: `token_v2=${NOTION_TOKEN}`
+        Cookie: `token_v2=${NOTION_TOKEN}; file_token=${NOTION_FILE_TOKEN}`
       },
     })
   , die = (str) => {
@@ -21,10 +21,10 @@ let axios = require('axios')
     }
 ;
 
-if (!NOTION_TOKEN || !NOTION_SPACE_ID) {
-  die(`Need to have both NOTION_TOKEN and NOTION_SPACE_ID defined in the environment.
-See https://medium.com/@arturburtsev/automated-notion-backups-f6af4edc298d for
-notes on how to get that information.`);
+if (!NOTION_TOKEN || !NOTION_FILE_TOKEN || !NOTION_SPACE_ID) {
+  die(`Need to have NOTION_TOKEN, NOTION_FILE_TOKEN and NOTION_SPACE_ID defined in the environment.
+See https://github.com/darobin/notion-backup/blob/main/README.md for
+a manual on how to get that information.`);
 }
 
 async function post (endpoint, data) {
