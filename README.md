@@ -106,7 +106,9 @@ You won't be able to backup files exceeding a size of 100MB unless you enable [G
 ## AWS S3 Support
 
 Due to LFS storage constraints (batch response: This repository is over its data quota. Account responsible for LFS bandwidth should purchase more data packs to restore access.), we can't store the backup file on LFS. To solve this problem, you can store Notion export files on AWS S3.
+Before using this workflow, please create an S3 bucket, an IAM User with Allow S3 PutObject policy(Please ref "AWS S3 IAM Policy" Section), and an IAM User Access key. After creating the S3 bucket and IAM User, add `AWS_S3_BUCKET_NAME`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_DEFAULT_REGION` to github Actions secrets and variables.
 
+### Workflow file
 ```yaml
 name: "Notion backup"
 
@@ -178,4 +180,23 @@ jobs:
           git add .
           git commit -m "Automated snapshot"
           git push
+```
+### AWS S3 IAM Policy
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"s3:PutObject"
+			],
+			"Resource": [
+				"arn:aws:s3:::<Your S3 Bucket Name>",
+				"arn:aws:s3:::<Your S3 Bucket Name>/*"
+			]
+		}
+	]
+}
 ```
