@@ -157,7 +157,6 @@ jobs:
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
-
           
       - name: Upload to S3
         if: "${{ env.AWS_ACCESS_KEY_ID != '' }}"
