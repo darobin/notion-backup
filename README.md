@@ -102,3 +102,81 @@ You won't be able to backup files exceeding a size of 100MB unless you enable [G
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.psd filter=lfs diff=lfs merge=lfs -text
 ```
+
+## AWS S3 Support
+
+Due to LFS storage constraints (batch response: This repository is over its data quota. Account responsible for LFS bandwidth should purchase more data packs to restore access.), we can't store the backup file on LFS. To solve this problem, you can store Notion export files on AWS S3.
+
+```yaml
+name: "Notion backup"
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    -   cron: "0 */4 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    name: Backup
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Delete previous backup
+        run: rm -rf markdown html *.zip
+
+      - name: Setup dependencies
+        run: npm install -g notion-backup
+        
+      - name: install awscli
+        id: install-aws-cli
+        uses: unfor19/install-aws-cli-action@master
+        with:
+          version: 2
+
+      - name: Run backup
+        run: notion-backup
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
+          NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
+          NODE_OPTIONS: "--max-http-header-size 15000"
+
+          
+      - name: Upload to S3
+        if: "${{ env.AWS_ACCESS_KEY_ID != '' }}"
+        run: |
+          aws s3 cp . s3://$AWS_S3_BUCKET_NAME/ --recursive --exclude "*" --include "*.zip"
+
+      - name: Delete zips 
+        if: "${{ env.AWS_ACCESS_KEY_ID == '' }}"
+        run: |
+          rm -f *.zip
+          rm -f markdown/*-Part*.zip
+          rm -f html/*-Part*.zip
+
+      - name: Commit changes
+        if: "${{ env.AWS_ACCESS_KEY_ID == '' }}"
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Automated snapshot"
+          git push
+```
