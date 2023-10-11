@@ -78,8 +78,8 @@ jobs:
       - name: Delete zips
         run: |
           rm -f *.zip
-          rm -f markdown/*-Part*.zip
-          rm -f html/*-Part*.zip
+          find markdown -name "*-Part*.zip" -type f -exec rm -f {} \;
+          find html -name "*-Part*.zip" -type f -exec rm -f {} \;
 
       - name: Commit changes
         run: |
