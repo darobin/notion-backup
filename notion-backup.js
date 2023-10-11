@@ -5,7 +5,7 @@ let axios = require("axios"),
   extract = require("extract-zip"),
   { retry } = require("async"),
   { createWriteStream } = require("fs"),
-  { mkdir, rm, readdir } = require("fs/promises"),
+  { mkdir, readdir } = require("fs/promises"),
   { join } = require("path"),
   notionAPI = "https://www.notion.so/api/v3",
   {
