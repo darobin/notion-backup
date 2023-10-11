@@ -114,18 +114,17 @@ async function exportFromNotion(format) {
 }
 
 async function run() {
+  let formatedDate = Date.now().toString();
   let cwd = process.cwd(),
-    mdDir = join(cwd, "markdown"),
+    mdDir = join(cwd, "markdown", formatedDate),
     mdFile = join(cwd, "markdown.zip"),
-    htmlDir = join(cwd, "html"),
+    htmlDir = join(cwd, "html", formatedDate),
     htmlFile = join(cwd, "html.zip");
   await exportFromNotion("markdown");
-  await rm(mdDir, { recursive: true, force: true });
   await mkdir(mdDir, { recursive: true });
   await extract(mdFile, { dir: mdDir });
   await extractInnerZip(mdDir);
   await exportFromNotion("html");
-  await rm(htmlDir, { recursive: true, force: true });
   await mkdir(htmlDir, { recursive: true });
   await extract(htmlFile, { dir: htmlDir });
   await extractInnerZip(htmlDir);

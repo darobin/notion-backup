@@ -62,9 +62,6 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Delete previous backup
-        run: rm -rf markdown html *.zip
-
       - name: Setup dependencies
         run: npm install -g notion-backup
 
