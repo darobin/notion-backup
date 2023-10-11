@@ -114,7 +114,7 @@ async function exportFromNotion(format) {
 }
 
 async function run() {
-  let formatedDate = Date.now().toString();
+  let formatedDate = new Date().toISOString();
   let cwd = process.cwd(),
     mdDir = join(cwd, "markdown", formatedDate),
     mdFile = join(cwd, "markdown.zip"),
