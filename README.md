@@ -101,3 +101,12 @@ You won't be able to backup files exceeding a size of 100MB unless you enable [G
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.psd filter=lfs diff=lfs merge=lfs -text
 ```
+
+## [Windows: Git filename too long](https://stackoverflow.com/questions/22575662/filename-too-long-in-git-for-windows)
+
+1. Enable long paths in Windows: [Tutorial](https://www.microfocus.com/documentation/filr/filr-4/filr-desktop/t47bx2ogpfz7.html)
+2. Enable long paths in Git:
+
+```shell
+git config core.longpaths true
+```
