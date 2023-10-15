@@ -25,9 +25,9 @@ let axios = require("axios"),
     console.error(str);
     process.exit(1);
   };
-if (!NOTION_TOKEN || !NOTION_FILE_TOKEN || !NOTION_SPACE_ID) {
-  die(`Need to have NOTION_TOKEN, NOTION_FILE_TOKEN and NOTION_SPACE_ID defined in the environment.
-See https://github.com/darobin/notion-backup/blob/main/README.md for
+if (!NOTION_TOKEN || !NOTION_FILE_TOKEN || !NOTION_SPACE_ID || !NOTION_TIME_ZONE || !NOTION_LOCALE) {
+  die(`Need to have NOTION_TOKEN, NOTION_FILE_TOKEN, NOTION_SPACE_ID, NOTION_TIME_ZONE and NOTION_LOCALE defined in the environment.
+See https://github.com/jhoffi/notion-backup-action/blob/main/README.md for
 a manual on how to get that information.`);
 }
 
