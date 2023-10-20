@@ -50,6 +50,7 @@ async function exportFromNotion (format) {
             timeZone: 'America/New_York',
             locale: 'en',
           },
+          shouldExportComments: false
         },
       },
     });
