@@ -56,6 +56,7 @@ async function exportFromNotion(format) {
             timeZone: NOTION_TIME_ZONE,
             locale: NOTION_LOCALE,
           },
+          shouldExportComments: false
         },
       },
     });
