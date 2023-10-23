@@ -25,7 +25,13 @@ let axios = require("axios"),
     console.error(str);
     process.exit(1);
   };
-if (!NOTION_TOKEN || !NOTION_FILE_TOKEN || !NOTION_SPACE_ID || !NOTION_TIME_ZONE || !NOTION_LOCALE) {
+if (
+  !NOTION_TOKEN ||
+  !NOTION_FILE_TOKEN ||
+  !NOTION_SPACE_ID ||
+  !NOTION_TIME_ZONE ||
+  !NOTION_LOCALE
+) {
   die(`Need to have NOTION_TOKEN, NOTION_FILE_TOKEN, NOTION_SPACE_ID, NOTION_TIME_ZONE and NOTION_LOCALE defined in the environment.
 See https://github.com/jhoffi/notion-backup-action/blob/main/README.md for
 a manual on how to get that information.`);
@@ -56,7 +62,7 @@ async function exportFromNotion(format) {
             timeZone: NOTION_TIME_ZONE,
             locale: NOTION_LOCALE,
           },
-          shouldExportComments: false
+          shouldExportComments: false,
         },
       },
     });
@@ -115,11 +121,10 @@ async function exportFromNotion(format) {
 }
 
 async function run() {
-  let formatedDate = new Date().toISOString().replaceAll(":", "_");
   let cwd = process.cwd(),
-    mdDir = join(cwd, "markdown", formatedDate),
+    mdDir = join(cwd, "markdown"),
     mdFile = join(cwd, "markdown.zip"),
-    htmlDir = join(cwd, "html", formatedDate),
+    htmlDir = join(cwd, "html"),
     htmlFile = join(cwd, "html.zip");
   await exportFromNotion("markdown");
   await mkdir(mdDir, { recursive: true });
