@@ -36,6 +36,10 @@ jobs:
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
 
+      - name: ls
+        run: |
+          ls -al
+
       - name: Delete zips
         run: |
           rm -f *.zip
