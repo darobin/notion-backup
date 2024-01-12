@@ -9,7 +9,6 @@ It reads `NOTION_TOKEN` and `NOTION_SPACE_ID` from the environment, and outputs 
 `markdown.zip`.
 
 ## Obtaining tokens
-
 Automatically downloading backups from Notion requires two unique authentication tokens and your individual space ID which must be obtained for the script to work.
 
 1. Log into your Notion account in your browser of choice if you haven't done so already.
