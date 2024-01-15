@@ -26,7 +26,9 @@
   "dependencies": {
     "async": "^3.2.4",
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.12",
     "commander": "^7.2.0",
+    "dotenv": "^16.3.1",
     "extract-zip": "^2.0.1",
     "notion-client": "^4.5.2",
     "notion-utils": "^4.5.2"

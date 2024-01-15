@@ -14,6 +14,7 @@ let axios = require("axios"),
     NOTION_SPACE_ID,
     NOTION_TIME_ZONE,
     NOTION_LOCALE,
+    NOTION_BACKUP_DIR,
   } = process.env,
   client = axios.create({
     baseURL: notionAPI,
@@ -109,7 +110,9 @@ async function exportFromNotion(format) {
       responseType: "stream",
     });
     let stream = res.data.pipe(
-      createWriteStream(join(process.cwd(), `${format}.zip`))
+      createWriteStream(
+        join(NOTION_BACKUP_DIR ?? process.cwd(), `${format}.zip`)
+      )
     );
     await new Promise((resolve, reject) => {
       stream.on("close", resolve);
@@ -120,8 +123,8 @@ async function exportFromNotion(format) {
   }
 }
 
-async function run() {
-  let cwd = process.cwd(),
+module.exports.run = async function run() {
+  let cwd = NOTION_BACKUP_DIR ?? process.cwd(),
     mdDir = join(cwd, "markdown"),
     mdFile = join(cwd, "markdown.zip"),
     htmlDir = join(cwd, "html"),
@@ -134,7 +137,7 @@ async function run() {
   await mkdir(htmlDir, { recursive: true });
   await extract(htmlFile, { dir: htmlDir });
   await extractInnerZip(htmlDir);
-}
+};
 
 async function extractInnerZip(dir) {
   let files = (await readdir(dir)).filter((fn) => /Part-\d+\.zip$/i.test(fn));
@@ -142,5 +145,3 @@ async function extractInnerZip(dir) {
     await extract(join(dir, file), { dir });
   }
 }
-
-run();
