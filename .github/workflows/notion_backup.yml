@@ -27,15 +27,14 @@ jobs:
 
       - name: Setup dependencies
         run: npm install -g notion-backup
-        
-      - name: Ignore long filenames
+
+      - name: Run backup
         run: |
-          find . -type f -print | grep -E '.{255,}' | while read -r file; do
+          find . -type f -print | awk 'length($0) >= 256' | while read -r file; do
             echo "Skipping backup for file with long name: $file"
           done
 
-      - name: Run backup
-        run: notion-backup
+          notion-backup
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
