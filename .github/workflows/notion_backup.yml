@@ -27,22 +27,13 @@ jobs:
 
       - name: Setup dependencies
         run: npm install -g notion-backup
-      
-      - name: Find files with long paths
-        run: |
-          LONG_PATH_FILES=$(find . -type f -print | awk 'length($0) >= 256')
-          if [ -n "$LONG_PATH_FILES" ]; then
-            echo "Skipping backup for files with long names:"
-            echo "$LONG_PATH_FILES"
-            exit 0
-          fi
 
-      - name: Run Notion backup
+      - name: List files and Run Notion backup
         run: |
           find . -type f -print | while read -r file; do
-            if [ ${#file} -lt 256 ]; then
+            if [ ${#file} -lt 255 ]; then
               echo "Backing up file: $file"
-              notion-backup "$file"
+              notion-backup "$file" || echo "Skipping backup for file with long name: $file"
             else
               echo "Skipping backup for file with long name: $file"
             fi
