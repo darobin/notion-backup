@@ -37,9 +37,16 @@ jobs:
             exit 0
           fi
 
-      - name: Run backup
+      - name: Run Notion backup
         run: |
-          notion-backup
+          find . -type f -print | while read -r file; do
+            if [ ${#file} -lt 256 ]; then
+              echo "Backing up file: $file"
+              notion-backup "$file"
+            else
+              echo "Skipping backup for file with long name: $file"
+            fi
+          done
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
