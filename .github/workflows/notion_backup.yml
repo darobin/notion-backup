@@ -28,6 +28,10 @@ jobs:
       - name: Setup dependencies
         run: npm install -g notion-backup
 
+      - name: ls
+        run: |
+          ls -al
+
       - name: Run backup
         run: |
           set +e  # Disable exit on error temporarily
