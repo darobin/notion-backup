@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - master
- # schedule:
- #   -   cron: "0 */4 * * *"
+  #schedule:
+  #  -   cron: "0 */4 * * *"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    #timeout-minutes: 15
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
 
@@ -28,25 +28,17 @@ jobs:
       - name: Setup dependencies
         run: npm install -g notion-backup
 
-      - name: List files and Run Notion backup
+      - name: Run backup
         run: |
-          find . -type f -print | while read -r file; do
-            if [ ${#file} -lt 255 ]; then
-              echo "Backing up file: $file"
-              notion-backup "$file" || echo "Skipping backup for file with long name: $file"
-            else
-              echo "Skipping backup for file with long name: $file"
-            fi
-          done
+          set +e  # Disable exit on error temporarily
+          notion-backup 2>&1 | tee backup.log || true  # Log output to a file and continue on error
+          grep 'Skipping backup for file with long name' backup.log | cut -d ' ' -f 8- > nobackupfiles.txt
+          set -e  # Enable exit on error back
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
-
-      - name: ls
-        run: |
-          ls -al
 
       - name: Delete zips
         run: |
