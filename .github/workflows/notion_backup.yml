@@ -44,11 +44,11 @@ jobs:
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
 
-      - name: Delete zips
-        run: |
-          rm -f *.zip
-          rm -f markdown/*-Part*.zip
-          rm -f html/*-Part*.zip
+      #- name: Delete zips
+      #  run: |
+      #    rm -f *.zip
+      #    rm -f markdown/*-Part*.zip
+      #    rm -f html/*-Part*.zip
 
       - name: Commit changes
         run: |
