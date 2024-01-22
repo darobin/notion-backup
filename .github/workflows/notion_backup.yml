@@ -4,14 +4,14 @@ on:
   push:
     branches:
       - master
-  schedule:
-    - cron: "0 */4 * * *"
+#  schedule:
+#    - cron: "0 */4 * * *"
 
 jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    timeout-minutes: 15
+    #timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
 
