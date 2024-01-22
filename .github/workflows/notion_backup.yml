@@ -4,8 +4,11 @@ on:
   push:
     branches:
       - master
-#  schedule:
-#    - cron: "0 */4 * * *"
+ # schedule:
+ #   -   cron: "0 */4 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   backup:
@@ -24,6 +27,10 @@ jobs:
 
       - name: Setup dependencies
         run: npm install -g notion-backup
+
+      - name: ls
+        run: |
+          ls -al
 
       - name: Run backup
         run: |
@@ -53,8 +60,3 @@ jobs:
           git add .
           git commit -m "Automated snapshot"
           git push
-
-      - name: List files with backup errors
-        run: |
-          find . -name '*-error.log' -exec cat {} \; > backup_errors.log
-          cat backup_errors.log
