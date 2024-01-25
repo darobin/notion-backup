@@ -30,12 +30,13 @@ jobs:
 
       - name: Run backup
         run: |
-          try:
-            notion-backup
-          except Exception as e:
-            print(f"Error occurred: {e}")
-            print("Continuing backup from where it left off...")
-            # Add code to skip the file that caused the error and continue the backup
+          for file in $(find . -type f); do
+            if [ ${#file} -gt 255 ]; then
+              echo "Skipping file $file due to long file path"
+            else
+              notion-backup
+            fi
+          done
 
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
