@@ -30,14 +30,17 @@ jobs:
 
       - name: Run backup
         run: |
-          for file in $(find . -type f); do
-            if [ ${#file} -gt 255 ]; then
-              echo "Skipping file $file due to long file path"
-            else
-              notion-backup
-            fi
+          while true; do
+            notion-backup || { 
+              status=$?
+              if [ $status -eq 1 ]; then
+                echo "File path too long. Skipping the file and continuing..."
+                continue
+              else
+                exit $status
+              fi
+            }
           done
-
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
