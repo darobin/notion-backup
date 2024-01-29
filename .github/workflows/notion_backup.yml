@@ -65,9 +65,9 @@ jobs:
 
           if [[ $(git status --porcelain) ]]; then
             git add .
-            git commit -m "Автоматический снимок"
+            git commit -m "Automated snapshot"
             git push
           else
-            echo "Нет изменений для коммита."
+            echo "No changes to commit."
           fi
 
