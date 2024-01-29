@@ -63,11 +63,11 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
 
-        if [[ $(git status --porcelain) ]]; then
-          git add .
-          git commit -m "Автоматический снимок"
-          git push
-        else
-          echo "Нет изменений для коммита."
-        fi
+          if [[ $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "Автоматический снимок"
+            git push
+          else
+            echo "Нет изменений для коммита."
+          fi
 
