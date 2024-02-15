@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - master
- # schedule:
- #   -   cron: "0 */4 * * *"
-
+  # schedule:
+  #   - cron: "0 */4 * * *"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -14,7 +13,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    #timeout-minutes: 15
+    # timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
 
@@ -28,46 +27,30 @@ jobs:
       - name: Setup dependencies
         run: npm install -g notion-backup
 
-      - name: ls
-        run: |
-          ls -al
-
-      # Try to resume from previous successful backup
-      - name: Restore backup progress
-        id: restore-progress
-        run: echo '::set-output name=backup_files::$(cat backup_progress.txt || true)'
-
       - name: Run backup
         run: |
-          set -e
-          notion-backup || true
-          echo "${{ env.NOTION_SPACE_ID }}/**/*.md" >> backup_progress.txt
+          while true; do
+            notion-backup || true
+            if [ $? -ne 0 ]; then
+              echo "ENAMETOOLONG error occurred, skipping file: $file" >> failed_files.txt
+            fi
+          done
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
           NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
           NODE_OPTIONS: "--max-http-header-size 15000"
 
-      - name: Save backup progress
-        if: always()
-        run: echo "${{ steps.restore-progress.outputs.backup_files }}" > backup_progress.txt
-
-      # - name: Delete zips
-      #   run: |
-      #     rm -f *.zip
-      #     rm -f markdown/*-Part*.zip
-      #     rm -f html/*-Part*.zip
+      - name: Delete zips
+        run: |
+          rm -f *.zip
+          rm -f markdown/*-Part*.zip
+          rm -f html/*-Part*.zip
 
       - name: Commit changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-
-          if [[ $(git status --porcelain) ]]; then
-            git add .
-            git commit -m "Automated snapshot"
-            git push
-          else
-            echo "No changes to commit."
-          fi
-
+          git add .
+          git commit -m "Automated snapshot"
+          git push
