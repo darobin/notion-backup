@@ -33,9 +33,10 @@ jobs:
 
       - name: Run backup
         run: |
-          const fs = require('fs');
-          const { promisify } = require('util');
-          const exec = promisify(require('child_process').exec);
+          node -e '
+          const fs = require("fs");
+          const util = require("util");
+          const exec = util.promisify(require("child_process").exec);
 
           async function backupFiles(path) {
             const files = fs.readdirSync(path);
@@ -51,8 +52,8 @@ jobs:
                     }
                   });
                 } catch (error) {
-                  if (error.message.includes('ENAMETOOLONG')) {
-                    fs.appendFileSync('failed_files.txt', `${filePath}\n`);
+                  if (error.message.includes("ENAMETOOLONG")) {
+                    fs.appendFileSync("failed_files.txt", `${filePath}\n`);
                   }
                 }
               } else if (fs.statSync(filePath).isDirectory()) {
@@ -61,7 +62,8 @@ jobs:
             }
           }
 
-          backupFiles('.');
+          backupFiles(".");
+          '
 
       - name: Delete zips
         run: |
