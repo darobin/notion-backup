@@ -13,13 +13,17 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    #timeout-minutes: 15
+    # timeout-minutes: 15
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
+      NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
     steps:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '14'
 
       - name: Delete previous backup
         run: rm -rf markdown html *.zip
@@ -29,23 +33,35 @@ jobs:
 
       - name: Run backup
         run: |
-          backup() {
-            for file in *; do
-              if [ -f "$file" ]; then
-                notion-backup "$file" || echo "$file" >> failed_files.txt
-              elif [ -d "$file" ]; then
-                cd "$file" || exit
-                backup
-                cd ..
-              fi
-            done
+          const fs = require('fs');
+          const { promisify } = require('util');
+          const exec = promisify(require('child_process').exec);
+
+          async function backupFiles(path) {
+            const files = fs.readdirSync(path);
+            for (const file of files) {
+              const filePath = `${path}/${file}`;
+              if (fs.statSync(filePath).isFile()) {
+                try {
+                  await exec(`notion-backup "${filePath}"`, {
+                    env: {
+                      NOTION_TOKEN: process.env.NOTION_TOKEN,
+                      NOTION_FILE_TOKEN: process.env.NOTION_FILE_TOKEN,
+                      NOTION_SPACE_ID: process.env.NOTION_SPACE_ID
+                    }
+                  });
+                } catch (error) {
+                  if (error.message.includes('ENAMETOOLONG')) {
+                    fs.appendFileSync('failed_files.txt', `${filePath}\n`);
+                  }
+                }
+              } else if (fs.statSync(filePath).isDirectory()) {
+                await backupFiles(filePath);
+              }
+            }
           }
-          backup
-        env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
-          NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
-          NODE_OPTIONS: "--max-http-header-size 15000"
+
+          backupFiles('.');
 
       - name: Delete zips
         run: |
