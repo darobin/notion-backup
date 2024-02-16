@@ -3,9 +3,9 @@ name: "Notion backup"
 on:
   push:
     branches:
-      - master
-  # schedule:
-  #   - cron: "0 */4 * * *"
+      - main
+  schedule:
+    - cron: "0 */4 * * *"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    # timeout-minutes: 15
+    timeout-minutes: 15
     env:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
@@ -71,10 +71,7 @@ jobs:
           rm -f markdown/*-Part*.zip
           rm -f html/*-Part*.zip
 
-      - name: Commit changes
+      - name: Check for changes
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "Automated snapshot"
-          git push
+          git diff --exit-code || git commit -am "Automated snapshot" && git push
+
