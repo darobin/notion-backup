@@ -3,9 +3,10 @@ name: "Notion backup"
 on:
   push:
     branches:
-      - main
-  schedule:
-    - cron: "0 */4 * * *"
+      - master
+  # schedule:
+  #   -   cron: "0 */4 * * *"
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -13,17 +14,13 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     name: Backup
-    timeout-minutes: 15
-    env:
-      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-      NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
-      NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
+    # timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
 
       - name: Delete previous backup
         run: rm -rf markdown html *.zip
@@ -33,37 +30,17 @@ jobs:
 
       - name: Run backup
         run: |
-          node -e '
-          const fs = require("fs");
-          const util = require("util");
-          const exec = util.promisify(require("child_process").exec);
+          notion-backup 2> error.log || true # Перенаправление stderr в файл
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_FILE_TOKEN: ${{ secrets.NOTION_FILE_TOKEN }}
+          NOTION_SPACE_ID: ${{ secrets.NOTION_SPACE_ID }}
+          NODE_OPTIONS: "--max-http-header-size 15000"
 
-          async function backupFiles(path) {
-            const files = fs.readdirSync(path);
-            for (const file of files) {
-              const filePath = `${path}/${file}`;
-              if (fs.statSync(filePath).isFile()) {
-                try {
-                  await exec(`notion-backup "${filePath}"`, {
-                    env: {
-                      NOTION_TOKEN: process.env.NOTION_TOKEN,
-                      NOTION_FILE_TOKEN: process.env.NOTION_FILE_TOKEN,
-                      NOTION_SPACE_ID: process.env.NOTION_SPACE_ID
-                    }
-                  });
-                } catch (error) {
-                  if (error.message.includes("ENAMETOOLONG")) {
-                    fs.appendFileSync("failed_files.txt", `${filePath}\n`);
-                  }
-                }
-              } else if (fs.statSync(filePath).isDirectory()) {
-                await backupFiles(filePath);
-              }
-            }
-          }
-
-          backupFiles(".");
-          '
+      - name: Extract error filenames
+        run: |
+          cat error.log | grep -oP "(?<=File error: ).*" > error_files.txt
+        continue-on-error: true # Продолжить выполнение, если файл error.log не существует
 
       - name: Delete zips
         run: |
@@ -71,7 +48,10 @@ jobs:
           rm -f markdown/*-Part*.zip
           rm -f html/*-Part*.zip
 
-      - name: Check for changes
+      - name: Commit changes
         run: |
-          git diff --exit-code || git commit -am "Automated snapshot" && git push
-
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Automated snapshot"
+          git push
