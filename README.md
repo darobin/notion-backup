@@ -1,4 +1,10 @@
 
+**⚠️⚠️⚠️ I am no longer maintaining this. ⚠️⚠️⚠️** I stopped using Notion, I don't like the direction that the product is headed in
+and I got tired of having to constantly fight the API just to get my own data back. I have switched to Obsidian and don't plan on
+looking back. You may, of course, still use this tool but I am not actively maintaining it. I will review PRs, slowly.
+
+If someone with credible experience wants to take it over, please let me know.
+
 # notion-backup
 
 This is a very simple tool to export a workspace from [Notion](https://www.notion.so/), designed
